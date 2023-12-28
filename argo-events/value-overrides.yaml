@@ -1,0 +1,6 @@
+controller:
+  pdb:
+    enabled: true
+    minAvailable: 1
+  metrics:
+    enabled: true
