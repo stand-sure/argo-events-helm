@@ -11,6 +11,15 @@ spec:
       eventName: demo-event
   triggers:
     - template:
+          name: http-sample
+          http:
+            url: https://httpbin.org/anything
+            payload:
+              - src:
+                  dependencyName: rmq-payload
+                dest: stuff
+            method: POST
+    - template:
         name: forward-message-trigger
         k8s:
           operation: create

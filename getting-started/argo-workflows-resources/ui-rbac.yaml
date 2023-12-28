@@ -6,6 +6,9 @@ rules:
   - apiGroups: [argoproj.io]
     resources: ["*"]
     verbs: ["*"]
+  - apiGroups: [""]
+    resources: [pods,pods/log,pods/exec,events]
+    verbs: [ get, list, watch ]
 ---
 apiVersion: v1
 kind: ServiceAccount
