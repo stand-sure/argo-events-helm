@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: amqp
+spec:
+  amqp:
+    demo-event:
+      url: amqp://lde.default.svc:5672
+      jsonBody: true
+      exchangeName: taazaa-entity-events
+      exchangeType: topic
+      routingKey: '#'
+      connectionBackoff:
+        duration: 10s
+        steps: 5
+        factor: 2
+        jitter: 0.2
+      exchangeDeclare:
+        durable: true
+        autoDelete: false
+        internal: false
+        noWait: false
+      queueDeclare:
+        name: "argo-eventsource"
+        durable: false
+        autoDelete: false
+        exclusive: true
+        noWait: false
+      queueBind:
+        noWait: false
+      auth:
+        username:
+          name: rmq
+          key: username
+        password:
+          name: rmq
+          key: password
