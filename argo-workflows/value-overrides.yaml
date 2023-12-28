@@ -1,0 +1,15 @@
+controller:
+  metricsConfig:
+    enabled: true
+#  workflowDefaults:
+#    spec:
+#      serviceAccountName: argo-workflow
+
+server:
+  pdb:
+    enabled: true
+    minAvailable: 1
+
+workflow:
+  serviceAccount:
+    create: true
