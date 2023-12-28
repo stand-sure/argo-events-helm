@@ -1,0 +1,57 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: workflow-ui
+rules:
+  - apiGroups: [argoproj.io]
+    resources: ["*"]
+    verbs: ["*"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: workflow-ui
+  namespace: argo
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: workflow-ui
+  namespace: argo-events
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: workflow-ui
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: workflow-ui
+subjects:
+  - kind: ServiceAccount
+    name: workflow-ui
+    namespace: argo
+  - kind: ServiceAccount
+    name: workflow-ui
+    namespace: argo-events
+  - kind: ServiceAccount
+    name: default
+    namespace: argo-events
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: workflow-ui.service-account-token
+  namespace: argo
+  annotations:
+    kubernetes.io/service-account.name: workflow-ui
+type: kubernetes.io/service-account-token
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: workflow-ui.service-account-token
+  namespace: argo-events
+  annotations:
+    kubernetes.io/service-account.name: workflow-ui
+type: kubernetes.io/service-account-token

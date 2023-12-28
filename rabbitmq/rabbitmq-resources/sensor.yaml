@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: rmq-sensor
+spec:
+  template:
+    serviceAccountName: default
+  dependencies:
+    - name: rmq-payload
+      eventSourceName: amqp
+      eventName: demo-event
+  triggers:
+    - template:
+        name: forward-message-trigger
+        k8s:
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: rabbit-workflow-
+              spec:
+                entrypoint: forward-message
+                arguments:
+                  parameters:
+                    - name: subject
+                      value: ""
+                    - name: body
+                      value: ""
+                templates:
+                  - name: forward-message
+                    inputs:
+                      parameters:
+                        - name: subject
+                        - name: body
+                    container:
+                      image: docker/whalesay:latest
+                      command: [cowsay]
+                      args: ["{{inputs.parameters.subject}}", "{{inputs.parameters.body}}"]
+          parameters:
+            - src:
+                dependencyName: rmq-payload
+                dataTemplate: '{{or .Input.routingKey "missing"}}'
+              dest: spec.arguments.parameters.0.value
+            - src:
+                dependencyName: rmq-payload
+                dataTemplate: '{{or .Input.body "missing"}}'
+              dest: spec.arguments.parameters.1.value
